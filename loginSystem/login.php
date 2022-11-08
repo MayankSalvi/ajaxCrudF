@@ -49,12 +49,18 @@
                                 <div class="form-group mb-3">
                                     <label class="label" for="email">Email</label>
                                     <input type="email" class="form-control" placeholder="Email" name="email"
-                                        id="loginEmail" required>
+                                        id="loginEmail" required
+                                        value="<?php if (isset($_COOKIE['emailCookie'])) {
+                                                                                                                                                    echo $_COOKIE['emailCookie'];
+                                                                                                                                                } ?>">
                                 </div>
                                 <div class="form-group mb-3">
                                     <label class="label" for="password">Password</label>
                                     <input type="password" class="form-control" placeholder="Password" name="password"
-                                        required>
+                                        required
+                                        value="<?php if (isset($_COOKIE['passwordCookie'])) {
+                                                                                                                                            echo $_COOKIE['passwordCookie'];
+                                                                                                                                        } ?>">
                                 </div>
                                 <small id="msg" class="fw-bold text-danger"></small>
                                 <div class="form-group mt-3">
@@ -65,7 +71,7 @@
                                 <div class="form-group d-md-flex">
                                     <div class="w-50 text-left">
                                         <label class="checkbox-wrap checkbox-primary mb-0">Remember Me
-                                            <input type="checkbox" checked>
+                                            <input type="checkbox" name="rememberMe">
                                             <span class="checkmark"></span>
                                         </label>
                                     </div>

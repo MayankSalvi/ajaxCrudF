@@ -2,50 +2,6 @@
 session_start();
 if (isset($_POST['action'])) {
     include '../connection/dbcon.php';
-    if ($_POST['action'] == 'sqlDataToExcel') {
-        $query = 'select * from students';
-        $result = mysqli_query($con, $query);
-        $output = '<table class="table table-bordered" id="mytable">
-        <thead style="background: #f8f9fa; position: sticky; top:0;">
-            <tr>
-                <th><button class="btn btn-sm" id="delete_multiple">&#128465;</button></th>
-                <th>ID</th>
-                <th>Image</th>
-                <th>Name</th>
-                <th>Email</th>
-                <th>Mobile No.</th>
-                <th>Address</th>
-                <th>Action</th>
-            </tr>
-        </thead>
-        <tbody>
-    ';
-        if (mysqli_num_rows($result) > 0) {
-            while ($row = mysqli_fetch_assoc($result)) {
-                $output .= '<tr>
-                    <td align="center"><input type="checkbox" class="delete_checkbox" value = ' . $row['id'] . ' /></td>
-                    <td>' . $row['id'] . '</td>
-                    <td><img src="../images/' . $row["image"] . '" height="60" width="75" class="img-thumbnail" /></td>
-                    <td>' . $row['first_name'] . ' ' . $row['last_name'] . '</td>
-                    <td>' . $row['email'] . '</td>
-                    <td class="d-none"><input id="deleteImageId" type="text" value=' . $row['image'] . ' /> </td>
-                    <td>' . $row['mobile'] . '</td>
-                    <td>' . $row['address'] . ', ' . $row['city'] . ' (' . $row['state'] . ') ' . $row['country'] . '</td>
-                    <td><button class="btn btn-primary mr-1 btn-sm btn-edit" data-sid=' . $row['id'] . ' >Edit</button><button class="btn btn-danger btn-sm btn-del" data-sid=' . $row['id'] . '>Delete</button></td>
-                </tr>
-                ';
-            }
-            $output .= '</tbody></table>';
-
-            header('Content-type: application/octet-stream');
-            header('Content-Disposition: attachment; filename=report.xls');
-            header("Pragma: no-cache");
-            header("Expires: 0");
-            echo $output;
-        } else {
-            echo "No Record Found";
-        }
-    }
     //change user status
     if ($_POST['action'] == 'userStatus') {
         $query = "UPDATE `users` SET `status`= {$_POST['value']} WHERE id = {$_POST['id']}";
@@ -59,10 +15,12 @@ if (isset($_POST['action'])) {
     }
     //fetch all users
     if ($_POST['action'] == 'fetchUsers') {
-        $query = "select * from users";
+        $rowCount = mysqli_num_rows(mysqli_query($con, "select id from users"));
+        $query = "select * from users limit 1, $rowCount";
         $result = mysqli_query($con, $query);
 
         $output = '';
+        $counting = 1;
         if (mysqli_num_rows($result) > 0) {
             while ($row = mysqli_fetch_assoc($result)) {
 
@@ -75,7 +33,7 @@ if (isset($_POST['action'])) {
                     $statusCls = "bg-danger text-white";
                 }
                 $output .= '<tr>
-                    <td>' . $row['id'] . '</td>
+                    <td>' . $counting . '</td>
                     <td>' . $row['name'] . '</td>
                     <td>' . $row['email'] . '</td>
                     <td class="" id="userStatus">
@@ -85,6 +43,7 @@ if (isset($_POST['action'])) {
                     </div>
                     </td>
                 </tr>';
+                $counting++;
             }
         }
         echo $output;
@@ -135,12 +94,21 @@ if (isset($_POST['action'])) {
 
         if (($row = mysqli_fetch_assoc($result)) > 0) {
             if ($row['status'] == 1) {
-                $_SESSION['id'] = $row['id'];
-                $_SESSION['name'] = $row['name'];
-                $_SESSION['usertype'] = $row['usertype'];
-                echo 1;
+                if (isset($_POST['rememberMe'])) {
+                    setcookie('emailCookie', $email, time() + 86400);
+                    setcookie('passwordCookie', $password, time() + 86400);
+                    $_SESSION['id'] = $row['id'];
+                    $_SESSION['name'] = $row['name'];
+                    $_SESSION['usertype'] = $row['usertype'];
+                    echo 1;
+                } else {
+                    $_SESSION['id'] = $row['id'];
+                    $_SESSION['name'] = $row['name'];
+                    $_SESSION['usertype'] = $row['usertype'];
+                    echo 1;
+                }
             } else {
-                echo "'You're not active, Contact To Admin";
+                echo "You're not active, Contact To Admin";
             }
         } else {
             echo 'Incorrect Details';
@@ -179,7 +147,6 @@ if (isset($_POST['action'])) {
         }
 
         $offset = ($page - 1) * $limit;
-
         $output = '<table class="table table-bordered" id="mytable">
         <thead style="background: #f8f9fa; position: sticky; top:0;">
             <tr>

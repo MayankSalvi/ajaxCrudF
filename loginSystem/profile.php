@@ -571,10 +571,7 @@ require '../connection/session.php'
                                 )
                             }
                         }
-
-
                     })
-
                 }
             })
         })
