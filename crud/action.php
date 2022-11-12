@@ -130,12 +130,12 @@ if (isset($_POST['action'])) {
 
         // Uncomment For Load More
         // $limit = $_POST['showEntries'];
-        // // $limit = 3;
+        // $limit = 3;
         // if (isset($_POST['page_no'])) {
-        //     $offset = $_POST['page_no'];
-        //     echo $offset;
+        //     $page = $_POST['page_no'];
+        //     // echo $offset;
         // } else {
-        //     $offset = 0;
+        //     $page = 1;
         // }
         // pagination 
         $limit = $_POST['showEntries'];
@@ -208,11 +208,7 @@ if (isset($_POST['action'])) {
             $output .= '</tbody></table><div class="">
             <div class="row mt-3">
                 <div class="col d-sm-flex jutify-content-sm-start align-items-sm-center">
-                    <span>Showing&nbsp;</span>
-                    <span>&nbsp;1&nbsp;</span>
-                    <span>to</span>
-                    <span id="totalRow">&nbsp' . $limit . '&nbsp;</span>
-                    <span>of</span>';
+                    <span>Showing 1 to ' . $limit . ' of</span>';
 
             $totalRow = mysqli_num_rows(mysqli_query($con, "select * from students"));
             $totalPages = ceil($totalRow / $limit);
